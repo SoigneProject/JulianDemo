@@ -2,6 +2,7 @@ var express = require('express'),
   app = express(),
   port = process.env.PORT || 3000,
   userRoute = require('./api/routes/userRoute'),
+  User = require('./api/models/userModel'),
   bodyParser = require('body-parser');
 
 const MongoClient = require('mongodb').MongoClient;
@@ -27,10 +28,16 @@ client.connect(err => { //this will connect me to the database
   client.close(); //this closes the client 
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 
-app.use('/users', userRoute);
+userRoute(app);
+
+app.use(function (req, res, next) {
+  res.status(404).send("Sorry can't find that!")
+})
 
 app.listen(port);
 
